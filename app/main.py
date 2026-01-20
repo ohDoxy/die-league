@@ -13,11 +13,14 @@ import os
 
 app = FastAPI()
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Get the directory where this file is located
+BASE_DIR = Path(__file__).parent.parent
 
-# Templates
-templates = Jinja2Templates(directory="templates")
+# Mount static files with absolute path
+app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
+
+# Templates with absolute path
+templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
 # CORS is not needed since frontend is served from same domain
 # But keeping it for API flexibility

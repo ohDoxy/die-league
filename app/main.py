@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +10,18 @@ import io
 import zipfile
 from pathlib import Path
 import os
+import secrets
+from datetime import datetime, timedelta
+from functools import wraps
+
+# Get commissioner password from environment variable, fallback to default for development
+COMMISSIONER_PASSWORD = os.getenv("COMMISSIONER_PASSWORD", "change_this_password_in_railway")
+
+# Session management
+active_sessions = {}  # token -> expiration_time
+
+# Session expiration time (24 hours)
+SESSION_DURATION = timedelta(hours=24)
 
 app = FastAPI()
 
@@ -207,13 +219,106 @@ async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
+# Authentication models
+class LoginRequest(BaseModel):
+    password: str
+
+
+class LoginResponse(BaseModel):
+    success: bool
+    message: str
+    token: Optional[str] = None
+
+
+def generate_session_token() -> str:
+    """Generate a secure random session token"""
+    return secrets.token_urlsafe(32)
+
+
+def is_token_valid(token: str) -> bool:
+    """Check if a session token is valid and not expired"""
+    if token not in active_sessions:
+        return False
+    
+    expiration = active_sessions[token]
+    if datetime.now() > expiration:
+        # Token expired, remove it
+        del active_sessions[token]
+        return False
+    
+    return True
+
+
+def cleanup_expired_sessions():
+    """Remove expired sessions (call periodically)"""
+    now = datetime.now()
+    expired_tokens = [
+        token for token, expiration in active_sessions.items()
+        if now > expiration
+    ]
+    for token in expired_tokens:
+        del active_sessions[token]
+
+
+async def verify_auth(authorization: Optional[str] = Header(None)):
+    """Dependency to verify authentication token"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+    
+    # Extract token from "Bearer <token>" format
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Invalid authorization format")
+    
+    token = authorization[7:]  # Remove "Bearer " prefix
+    
+    if not is_token_valid(token):
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    
+    return token
+
+
+# Authentication endpoints
+@app.post("/login", response_model=LoginResponse)
+def login(login_request: LoginRequest):
+    """Verify commissioner password and return session token"""
+    cleanup_expired_sessions()
+    
+    if login_request.password == COMMISSIONER_PASSWORD:
+        # Generate new session token
+        token = generate_session_token()
+        expiration = datetime.now() + SESSION_DURATION
+        active_sessions[token] = expiration
+        
+        return LoginResponse(
+            success=True, 
+            message="Authentication successful",
+            token=token
+        )
+    else:
+        raise HTTPException(status_code=401, detail="Incorrect password")
+
+
+@app.post("/logout")
+def logout(token: str = Depends(verify_auth)):
+    """Invalidate session token"""
+    if token in active_sessions:
+        del active_sessions[token]
+    return {"success": True, "message": "Logged out successfully"}
+
+
+@app.get("/auth/check")
+def check_auth(token: str = Depends(verify_auth)):
+    """Endpoint to check authentication status"""
+    return {"authenticated": True}
+
+
 @app.get("/current-week")
 def get_current_week():
     return {"week": current_week}
 
 
 @app.put("/current-week")
-def set_current_week(week_data: WeekUpdate):
+def set_current_week(week_data: WeekUpdate, token: str = Depends(verify_auth)):
     global current_week
     week_value = week_data.week
     if isinstance(week_value, str):
@@ -229,7 +334,7 @@ def set_current_week(week_data: WeekUpdate):
 
 
 @app.get("/export-data")
-def export_data():
+def export_data(token: str = Depends(verify_auth)):
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         zip_file.writestr("players.json", json.dumps([p.dict() for p in players], indent=2))
@@ -242,7 +347,7 @@ def export_data():
 
 
 @app.post("/players")
-def add_player(p: Player):
+def add_player(p: Player, token: str = Depends(verify_auth)):
     # Generate unique ID if not provided
     if p.id is None:
         # Generate a unique integer ID (using max existing ID + 1, or random if none exist)
@@ -263,7 +368,7 @@ def list_players():
 
 
 @app.put("/players/{player_id}")
-def update_player(player_id: int, p: Player):
+def update_player(player_id: int, p: Player, token: str = Depends(verify_auth)):
     for i, player in enumerate(players):
         if player.id == player_id:
             players[i] = p
@@ -273,7 +378,7 @@ def update_player(player_id: int, p: Player):
 
 
 @app.delete("/players/{player_id}")
-def delete_player(player_id: int):
+def delete_player(player_id: int, token: str = Depends(verify_auth)):
     global players
     players = [p for p in players if p.id != player_id]
     save_players()
@@ -281,7 +386,7 @@ def delete_player(player_id: int):
 
 
 @app.post("/teams")
-def add_team(t: Team):
+def add_team(t: Team, token: str = Depends(verify_auth)):
     # Generate unique ID if not provided
     if t.id is None:
         if teams:
@@ -300,7 +405,7 @@ def list_teams():
 
 
 @app.put("/teams/{team_id}")
-def update_team(team_id: int, t: Team):
+def update_team(team_id: int, t: Team, token: str = Depends(verify_auth)):
     for i, team in enumerate(teams):
         if team.id == team_id:
             teams[i] = t
@@ -310,7 +415,7 @@ def update_team(team_id: int, t: Team):
 
 
 @app.delete("/teams/{team_id}")
-def delete_team(team_id: int):
+def delete_team(team_id: int, token: str = Depends(verify_auth)):
     global teams
     teams = [t for t in teams if t.id != team_id]
     save_teams()
@@ -318,7 +423,7 @@ def delete_team(team_id: int):
 
 
 @app.post("/games")
-def add_game(g: Game):
+def add_game(g: Game, token: str = Depends(verify_auth)):
     # Generate unique ID if not provided
     if g.id is None:
         if games:
@@ -344,7 +449,7 @@ def get_team_schedule(team_id: int):
 
 
 @app.put("/games/{game_id}")
-def update_game(game_id: int, g: Game):
+def update_game(game_id: int, g: Game, token: str = Depends(verify_auth)):
     for i, game in enumerate(games):
         if game.id == game_id:
             games[i] = g
@@ -354,7 +459,7 @@ def update_game(game_id: int, g: Game):
 
 
 @app.delete("/games/{game_id}")
-def delete_game(game_id: int):
+def delete_game(game_id: int, token: str = Depends(verify_auth)):
     global games
     games = [g for g in games if g.id != game_id]
     save_games()
@@ -386,7 +491,7 @@ class MatchSubmission(BaseModel):
 
 
 @app.post("/matches")
-def submit_match(match: MatchSubmission):
+def submit_match(match: MatchSubmission, token: str = Depends(verify_auth)):
     """Submit a match with all game stats and update player stats and team records"""
     global players, teams
     

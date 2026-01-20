@@ -1,6 +1,5 @@
 // Use relative paths for API calls (same domain as frontend)
 const API_BASE_URL = '';
-const COMMISSIONER_PASSWORD = 'commissioner2024'; // Change this to your desired password
 
 // Global variables for editing
 let editingStandingsTeamId = null;
@@ -33,17 +32,43 @@ async function fetchCurrentWeek() {
 }
 
 // Authentication functions
-function isAuthenticated() {
-    return localStorage.getItem('commissioner_auth') === 'true';
+function getAuthToken() {
+    return localStorage.getItem('commissioner_token');
 }
 
-function setAuthenticated(value) {
-    if (value) {
-        localStorage.setItem('commissioner_auth', 'true');
+function setAuthToken(token) {
+    if (token) {
+        localStorage.setItem('commissioner_token', token);
     } else {
-        localStorage.removeItem('commissioner_auth');
+        localStorage.removeItem('commissioner_token');
+    }
+}
+
+function isAuthenticated() {
+    return getAuthToken() !== null;
+}
+
+function setAuthenticated(value, token = null) {
+    if (value && token) {
+        setAuthToken(token);
+    } else {
+        setAuthToken(null);
     }
     updateAuthUI();
+}
+
+// Helper function to get auth headers for API requests
+function getAuthHeaders() {
+    const token = getAuthToken();
+    if (token) {
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        };
+    }
+    return {
+        'Content-Type': 'application/json'
+    };
 }
 
 function updateAuthUI() {
@@ -144,7 +169,9 @@ async function downloadBackup() {
     }
     
     try {
-        const response = await fetch(`${API_BASE_URL}/export-data`);
+        const response = await fetch(`${API_BASE_URL}/export-data`, {
+            headers: getAuthHeaders()
+        });
         if (!response.ok) {
             alert('Error downloading backup');
             return;
@@ -164,8 +191,20 @@ async function downloadBackup() {
     }
 }
 
-function logout() {
+async function logout() {
     if (confirm('Are you sure you want to logout?')) {
+        const token = getAuthToken();
+        if (token) {
+            try {
+                // Notify backend to invalidate token
+                await fetch(`${API_BASE_URL}/logout`, {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
         setAuthenticated(false);
         // Close any open forms
         document.querySelectorAll('.form-modal').forEach(modal => {
@@ -177,22 +216,45 @@ function logout() {
 }
 
 // Login form handler
-document.getElementById('loginForm').addEventListener('submit', (e) => {
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const password = document.getElementById('password').value;
     const errorDiv = document.getElementById('login-error');
     
-    if (password === COMMISSIONER_PASSWORD) {
-        setAuthenticated(true);
-        closeLoginForm();
-        // Force refresh to show edit/delete buttons
-        const activeTab = document.querySelector('.tab-btn.active');
-        if (activeTab) {
-            const tabName = activeTab.getAttribute('data-tab');
-            loadData(tabName);
+    try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: password })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.token) {
+                setAuthenticated(true, result.token);
+                closeLoginForm();
+                // Force refresh to show edit/delete buttons
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) {
+                    const tabName = activeTab.getAttribute('data-tab');
+                    loadData(tabName);
+                }
+            } else {
+                errorDiv.textContent = 'Incorrect password. Access denied.';
+                errorDiv.classList.remove('hidden');
+                document.getElementById('password').value = '';
+            }
+        } else {
+            const error = await response.json();
+            errorDiv.textContent = error.detail || 'Incorrect password. Access denied.';
+            errorDiv.classList.remove('hidden');
+            document.getElementById('password').value = '';
         }
-    } else {
-        errorDiv.textContent = 'Incorrect password. Access denied.';
+    } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'Error connecting to server. Please try again.';
         errorDiv.classList.remove('hidden');
         document.getElementById('password').value = '';
     }
@@ -278,9 +340,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 
                 const response = await fetch(`${API_BASE_URL}/teams/${editingStandingsTeamId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(updatedTeam)
                 });
                 
@@ -388,9 +448,7 @@ window.addEventListener('DOMContentLoaded', async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/current-week`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({ week: selectedWeek })
                 });
                 
@@ -454,9 +512,7 @@ window.addEventListener('DOMContentLoaded', async () => {
                 
                 const response = await fetch(`${API_BASE_URL}/players/${editingStatsPlayerId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(updatedPlayer)
                 });
                 
@@ -889,7 +945,8 @@ async function deleteScheduledGame(gameId, teamId) {
     
     try {
         const response = await fetch(`${API_BASE_URL}/games/${gameId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
         
         if (response.ok) {
@@ -1031,9 +1088,7 @@ document.getElementById('playerForm').addEventListener('submit', async (e) => {
         
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(player)
         });
         
@@ -1061,7 +1116,8 @@ async function deletePlayer(playerId) {
     
     try {
         const response = await fetch(`${API_BASE_URL}/players/${playerId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
         
         if (response.ok) {
@@ -1166,9 +1222,7 @@ document.getElementById('teamForm').addEventListener('submit', async (e) => {
         
         const response = await fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify(team)
         });
         
@@ -1199,7 +1253,8 @@ async function deleteTeam(teamId) {
     
     try {
         const response = await fetch(`${API_BASE_URL}/teams/${teamId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: getAuthHeaders()
         });
         
         if (response.ok) {
@@ -1295,9 +1350,7 @@ if (gameFormElement) {
             
             const response = await fetch(url, {
                 method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: getAuthHeaders(),
                 body: JSON.stringify(game)
             });
             
@@ -2014,9 +2067,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/matches`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify(matchData)
                 });
                 

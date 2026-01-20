@@ -1,6 +1,8 @@
 const API_BASE_URL = 'http://localhost:8000';
 const COMMISSIONER_PASSWORD = 'commissioner2024'; // Change this to your desired password
 
+console.log("app.js loaded ✅");
+
 // Global variables for editing
 let editingStandingsTeamId = null;
 let scheduleGameTeamId = null;

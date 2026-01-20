@@ -32,8 +32,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Data storage directory
-DATA_DIR = Path("data")
+# Data storage directory - use absolute path
+DATA_DIR = BASE_DIR / "data"
 DATA_DIR.mkdir(exist_ok=True)
 
 PLAYERS_FILE = DATA_DIR / "players.json"

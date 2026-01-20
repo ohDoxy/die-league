@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "name": "No Fly Zone",
+    "player1_id": 1,
+    "player2_id": 10,
+    "player3_id": 19,
+    "wins": 1,
+    "losses": 0
+  },
+  {
+    "id": 2,
+    "name": "TEAM LUCAS",
+    "player1_id": 3,
+    "player2_id": 8,
+    "player3_id": 21,
+    "wins": 0,
+    "losses": 0
+  },
+  {
+    "id": 3,
+    "name": "Dieagles",
+    "player1_id": 2,
+    "player2_id": 9,
+    "player3_id": 20,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "id": 4,
+    "name": "Natty Light",
+    "player1_id": 6,
+    "player2_id": 11,
+    "player3_id": 15,
+    "wins": 1,
+    "losses": 0
+  },
+  {
+    "id": 5,
+    "name": "TEAM LUKE",
+    "player1_id": 7,
+    "player2_id": 12,
+    "player3_id": 18,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "id": 6,
+    "name": "Beef Stroganoff",
+    "player1_id": 5,
+    "player2_id": 13,
+    "player3_id": 17,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "id": 7,
+    "name": "Dice Fairies",
+    "player1_id": 4,
+    "player2_id": 14,
+    "player3_id": 16,
+    "wins": 1,
+    "losses": 0
+  }
+]

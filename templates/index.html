@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beer Die League</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="league-title">Chi Phi Die League</h1>
+            <div class="auth-controls">
+                <span id="auth-status" class="auth-status">View Only</span>
+                <button id="login-btn" class="btn btn-secondary btn-small" onclick="openLoginForm()">Commissioner Login</button>
+                <button id="logout-btn" class="btn btn-secondary btn-small hidden" onclick="logout()">Logout</button>
+                <button id="download-backup-btn" class="btn btn-secondary btn-small commissioner-only hidden" onclick="downloadBackup()">Download Backup</button>
+            </div>
+        </header>
+
+        <!-- Login Modal -->
+        <div id="login-form" class="form-modal hidden">
+            <div class="form-content">
+                <h3>Commissioner Login</h3>
+                <p class="form-description">Enter the commissioner password to add or modify data</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required autocomplete="off">
+                    </div>
+                    <div id="login-error" class="error-message hidden"></div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeLoginForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="current-week-banner">
+            <button id="edit-week-btn" class="btn btn-primary btn-small commissioner-only hidden" onclick="openWeekForm()">Edit Week</button>
+        </div>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="players">Player Rankings</button>
+            <button class="tab-btn commissioner-only hidden" data-tab="teams">Teams</button>
+            <button class="tab-btn commissioner-only hidden" data-tab="add-match">Add Match</button>
+            <button class="tab-btn" data-tab="standings">Standings</button>
+            <button class="tab-btn" data-tab="schedule">Schedule</button>
+            <button class="tab-btn" data-tab="stats">Stats</button>
+            <button class="tab-btn" data-tab="leaders">Leaders</button>
+        </nav>
+
+        <!-- Players Section -->
+        <section id="players" class="tab-content active">
+            <div class="section-header">
+                <h2>Player Rankings</h2>
+                <button id="add-player-btn" class="btn btn-primary commissioner-only hidden" onclick="openPlayerForm()">+ Add Player</button>
+            </div>
+
+            <div id="player-form" class="form-modal hidden">
+                <div class="form-content">
+                    <h3>Add New Player</h3>
+                    <form id="playerForm">
+                        <div class="form-group">
+                            <label for="playerName">Name</label>
+                            <input type="text" id="playerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="playerRank">Rank</label>
+                            <input type="number" id="playerRank" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Player</button>
+                            <button type="button" class="btn btn-secondary" onclick="closePlayerForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="players-list" class="players-list">
+                <!-- Players will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Week Form Modal -->
+        <div id="week-form" class="form-modal hidden">
+            <div class="form-content">
+                <h3>Set Current Week</h3>
+                <form id="weekForm">
+                    <div class="form-group">
+                        <label for="currentWeekSelect">Week (Preseason or 1-14)</label>
+                        <select id="currentWeekSelect" required>
+                            <option value="" disabled selected>Select Week</option>
+                            <option value="preseason">Preseason</option>
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                            <option value="5">Week 5</option>
+                            <option value="6">Week 6</option>
+                            <option value="7">Week 7</option>
+                            <option value="8">Week 8</option>
+                            <option value="9">Week 9</option>
+                            <option value="10">Week 10</option>
+                            <option value="11">Week 11</option>
+                            <option value="12">Week 12</option>
+                            <option value="13">Week 13</option>
+                            <option value="14">Week 14</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeWeekForm()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Teams Section -->
+        <section id="teams" class="tab-content">
+            <div class="section-header">
+                <h2>Teams</h2>
+                <button id="add-team-btn" class="btn btn-primary commissioner-only hidden" onclick="openTeamForm()">+ Add Team</button>
+            </div>
+
+            <div id="team-form" class="form-modal hidden">
+                <div class="form-content">
+                    <h3>Add New Team</h3>
+                    <form id="teamForm">
+                        <div class="form-group">
+                            <label for="teamName">Team Name</label>
+                            <input type="text" id="teamName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamPlayer1">Player 1 ID</label>
+                            <input type="number" id="teamPlayer1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamPlayer2">Player 2 ID</label>
+                            <input type="number" id="teamPlayer2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teamPlayer3">Player 3 ID</label>
+                            <input type="number" id="teamPlayer3" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Team</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeTeamForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="teams-list" class="teams-list">
+                <!-- Teams will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Standings Section -->
+        <section id="standings" class="tab-content">
+            <div class="section-header">
+                <h2>Standings</h2>
+            </div>
+
+            <div id="standings-record-form" class="form-modal hidden">
+                <div class="form-content">
+                    <h3 id="standings-form-title">Edit Team Record</h3>
+                    <form id="standingsRecordForm">
+                        <div class="form-group">
+                            <label for="standingsWins">Wins</label>
+                            <input type="number" id="standingsWins" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="standingsLosses">Losses</label>
+                            <input type="number" id="standingsLosses" required min="0">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Record</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeStandingsRecordForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="standings-list" class="standings-list">
+                <!-- Standings will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Schedule Section -->
+        <section id="schedule" class="tab-content">
+            <div class="section-header">
+                <h2>Schedule</h2>
+            </div>
+
+            <div id="schedule-game-form" class="form-modal hidden">
+                <div class="form-content">
+                    <h3 id="schedule-form-title">Add Game</h3>
+                    <form id="scheduleGameForm">
+                        <div class="form-group">
+                            <label for="scheduleWeek">Week</label>
+                            <select id="scheduleWeek" required>
+                                <option value="" disabled selected>Select Week</option>
+                                <option value="1">Week 1</option>
+                                <option value="2">Week 2</option>
+                                <option value="3">Week 3</option>
+                                <option value="4">Week 4</option>
+                                <option value="5">Week 5</option>
+                                <option value="6">Week 6</option>
+                                <option value="7">Week 7</option>
+                                <option value="8">Week 8</option>
+                                <option value="9">Week 9</option>
+                                <option value="10">Week 10</option>
+                                <option value="11">Week 11</option>
+                                <option value="12">Week 12</option>
+                                <option value="13">Week 13</option>
+                                <option value="14">Week 14</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleOpponent">Opponent Team ID (0 for BYE)</label>
+                            <input type="number" id="scheduleOpponent" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleLocation">Location</label>
+                            <select id="scheduleLocation" required>
+                                <option value="home" selected>Home</option>
+                                <option value="away">Away</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Game</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeScheduleGameForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="schedule-list" class="schedule-list">
+                <!-- Teams will be loaded here -->
+            </div>
+
+            <div id="team-schedule-view" class="team-schedule-view hidden">
+                <div class="schedule-header">
+                    <button class="btn btn-secondary btn-small" onclick="backToScheduleList()">← Back to Teams</button>
+                    <h3 id="team-schedule-title"></h3>
+                </div>
+                <div id="team-schedule-games" class="schedule-games-list">
+                    <!-- Team's games will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section id="stats" class="tab-content">
+            <div class="section-header">
+                <h2>Player Statistics</h2>
+            </div>
+
+            <div id="stats-form" class="form-modal hidden">
+                <div class="form-content">
+                    <h3 id="stats-form-title">Edit Player Stats</h3>
+                    <form id="statsForm">
+                        <div class="form-group">
+                            <label for="statsPoints">Points</label>
+                            <input type="number" id="statsPoints" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="statsTableHits">Table Hits</label>
+                            <input type="number" id="statsTableHits" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="statsThrows">Throws</label>
+                            <input type="number" id="statsThrows" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="statsCatches">Catches</label>
+                            <input type="number" id="statsCatches" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="statsDrops">Drops</label>
+                            <input type="number" id="statsDrops" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="statsFifas">Fifas</label>
+                            <input type="number" id="statsFifas" required min="0">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Stats</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeStatsForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="stats-list" class="stats-list">
+                <!-- Stats will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Leaders Section -->
+        <section id="leaders" class="tab-content">
+            <div class="section-header">
+                <h2>League Leaders</h2>
+            </div>
+
+            <div id="leaders-list" class="leaders-list">
+                <!-- Leaders will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Add Match Section -->
+        <section id="add-match" class="tab-content">
+            <div class="section-header">
+                <h2>Add Match</h2>
+            </div>
+
+            <div id="add-match-form-container">
+                <form id="match-form">
+                    <div class="form-group">
+                        <label for="team-a-select">Team A</label>
+                        <select id="team-a-select" required>
+                            <option value="" disabled selected>Select Team A</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="team-b-select">Team B</label>
+                        <select id="team-b-select" required>
+                            <option value="" disabled selected>Select Team B</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="num-games">Number of Games Played</label>
+                        <input type="number" id="num-games" min="1" max="7" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="winner-select">Winning Team</label>
+                        <select id="winner-select" required>
+                            <option value="" disabled selected>Select Winner</option>
+                        </select>
+                    </div>
+
+                    <div id="games-container">
+                        <!-- Games will be dynamically generated here -->
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetMatchForm()">Reset</button>
+                        <button type="submit" class="btn btn-primary">Submit Match</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Player Stats View Modal (outside tab sections so it's always accessible) -->
+        <div id="player-stats-view" class="form-modal hidden">
+            <div class="form-content stats-view-content">
+                <h3 id="player-stats-view-title">Player Statistics</h3>
+                <div id="player-stats-view-content" class="stats-view-grid">
+                    <!-- Stats will be loaded here -->
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closePlayerStatsView()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
+

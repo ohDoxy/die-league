@@ -14,7 +14,7 @@
     "player1_id": 3,
     "player2_id": 8,
     "player3_id": 21,
-    "wins": 0,
+    "wins": 1,
     "losses": 0
   },
   {
@@ -24,7 +24,7 @@
     "player2_id": 9,
     "player3_id": 20,
     "wins": 0,
-    "losses": 1
+    "losses": 2
   },
   {
     "id": 4,

@@ -1446,6 +1446,7 @@ async function viewPlayerStats(playerId) {
         const throws = player.throws || 0;
         const catches = player.catches || 0;
         const drops = player.drops || 0;
+        const tableHits = player.table_hits || 0;
         
         // Points per throw (handle division by zero)
         const pointsPerThrow = throws > 0 ? (points / throws).toFixed(3) : '0.000';
@@ -1453,6 +1454,9 @@ async function viewPlayerStats(playerId) {
         // Catch % (handle division by zero)
         const totalAttempts = catches + drops;
         const catchPercentage = totalAttempts > 0 ? ((catches / totalAttempts) * 100).toFixed(1) : '0.0';
+        
+        // Hit % (handle division by zero)
+        const hitPercentage = throws > 0 ? ((tableHits / throws) * 100).toFixed(1) : '0.0';
         
         // Set title and content
         document.getElementById('player-stats-view-title').textContent = `${player.name} - Statistics`;
@@ -1498,6 +1502,10 @@ async function viewPlayerStats(playerId) {
             <div class="stat-item">
                 <span class="stat-label">Catch %</span>
                 <span class="stat-value">${catchPercentage}%</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Hit %</span>
+                <span class="stat-value">${hitPercentage}%</span>
             </div>
         `;
         
@@ -1588,6 +1596,7 @@ async function displayStats() {
             const throws = player.throws || 0;
             const catches = player.catches || 0;
             const drops = player.drops || 0;
+            const tableHits = player.table_hits || 0;
             
             // Points per throw (handle division by zero)
             const pointsPerThrow = throws > 0 ? (points / throws).toFixed(3) : '0.000';
@@ -1595,6 +1604,9 @@ async function displayStats() {
             // Catch % (handle division by zero)
             const totalAttempts = catches + drops;
             const catchPercentage = totalAttempts > 0 ? ((catches / totalAttempts) * 100).toFixed(1) : '0.0';
+            
+            // Hit % (handle division by zero)
+            const hitPercentage = throws > 0 ? ((tableHits / throws) * 100).toFixed(1) : '0.0';
             
             return `
                 <div class="card stats-card">
@@ -1642,6 +1654,10 @@ async function displayStats() {
                         <div class="stat-item">
                             <span class="stat-label">Catch %</span>
                             <span class="stat-value">${catchPercentage}%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Hit %</span>
+                            <span class="stat-value">${hitPercentage}%</span>
                         </div>
                     </div>
                 </div>
@@ -1735,12 +1751,13 @@ async function displayLeaders() {
             const throws = player.throws || 0;
             const catches = player.catches || 0;
             const drops = player.drops || 0;
+            const tableHits = player.table_hits || 0;
             const totalAttempts = catches + drops;
             
             return {
                 ...player,
                 points: points,
-                table_hits: player.table_hits || 0,
+                table_hits: tableHits,
                 throws: throws,
                 catches: catches,
                 drops: drops,
@@ -1748,7 +1765,8 @@ async function displayLeaders() {
                 cup_sinks: player.cup_sinks || 0,
                 fours: player.fours || 0,
                 pointsPerThrow: throws > 0 ? points / throws : 0,
-                catchPercentage: totalAttempts > 0 ? (catches / totalAttempts) * 100 : 0
+                catchPercentage: totalAttempts > 0 ? (catches / totalAttempts) * 100 : 0,
+                hitPercentage: throws > 0 ? (tableHits / throws) * 100 : 0
             };
         });
         
@@ -1763,7 +1781,8 @@ async function displayLeaders() {
             { key: 'cup_sinks', label: 'Cup Sinks', valueKey: 'cup_sinks', format: (v) => v.toFixed(0), reverse: false },
             { key: 'fours', label: '4\'s', valueKey: 'fours', format: (v) => v.toFixed(0), reverse: false },
             { key: 'pointsPerThrow', label: 'Points per Throw', valueKey: 'pointsPerThrow', format: (v) => v.toFixed(3), reverse: false },
-            { key: 'catchPercentage', label: 'Catch %', valueKey: 'catchPercentage', format: (v) => v.toFixed(1) + '%', reverse: false }
+            { key: 'catchPercentage', label: 'Catch %', valueKey: 'catchPercentage', format: (v) => v.toFixed(1) + '%', reverse: false },
+            { key: 'hitPercentage', label: 'Hit %', valueKey: 'hitPercentage', format: (v) => v.toFixed(1) + '%', reverse: false }
         ];
         
         container.innerHTML = statCategories.map(category => {

@@ -507,7 +507,9 @@ window.addEventListener('DOMContentLoaded', async () => {
                     throws: parseInt(document.getElementById('statsThrows').value) || 0,
                     catches: parseInt(document.getElementById('statsCatches').value) || 0,
                     drops: parseInt(document.getElementById('statsDrops').value) || 0,
-                    fifas: parseInt(document.getElementById('statsFifas').value) || 0
+                    fifas: parseInt(document.getElementById('statsFifas').value) || 0,
+                    cup_sinks: parseInt(document.getElementById('statsCupSinks').value) || 0,
+                    fours: parseInt(document.getElementById('statsFours').value) || 0
                 };
                 
                 const response = await fetch(`${API_BASE_URL}/players/${editingStatsPlayerId}`, {
@@ -1482,6 +1484,14 @@ async function viewPlayerStats(playerId) {
                 <span class="stat-value">${player.fifas || 0}</span>
             </div>
             <div class="stat-item">
+                <span class="stat-label">Cup Sinks</span>
+                <span class="stat-value">${player.cup_sinks || 0}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">4's</span>
+                <span class="stat-value">${player.fours || 0}</span>
+            </div>
+            <div class="stat-item">
                 <span class="stat-label">Points per Throw</span>
                 <span class="stat-value">${pointsPerThrow}</span>
             </div>
@@ -1618,6 +1628,14 @@ async function displayStats() {
                             <span class="stat-value">${player.fifas || 0}</span>
                         </div>
                         <div class="stat-item">
+                            <span class="stat-label">Cup Sinks</span>
+                            <span class="stat-value">${player.cup_sinks || 0}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">4's</span>
+                            <span class="stat-value">${player.fours || 0}</span>
+                        </div>
+                        <div class="stat-item">
                             <span class="stat-label">Points per Throw</span>
                             <span class="stat-value">${pointsPerThrow}</span>
                         </div>
@@ -1675,6 +1693,8 @@ function editStats(playerId) {
                 document.getElementById('statsCatches').value = player.catches || 0;
                 document.getElementById('statsDrops').value = player.drops || 0;
                 document.getElementById('statsFifas').value = player.fifas || 0;
+                document.getElementById('statsCupSinks').value = player.cup_sinks || 0;
+                document.getElementById('statsFours').value = player.fours || 0;
                 const form = document.getElementById('stats-form');
                 form.classList.remove('hidden');
             } else {
@@ -1725,6 +1745,8 @@ async function displayLeaders() {
                 catches: catches,
                 drops: drops,
                 fifas: player.fifas || 0,
+                cup_sinks: player.cup_sinks || 0,
+                fours: player.fours || 0,
                 pointsPerThrow: throws > 0 ? points / throws : 0,
                 catchPercentage: totalAttempts > 0 ? (catches / totalAttempts) * 100 : 0
             };
@@ -1738,6 +1760,8 @@ async function displayLeaders() {
             { key: 'catches', label: 'Catches', valueKey: 'catches', format: (v) => v.toFixed(0), reverse: false },
             { key: 'drops', label: 'Drops', valueKey: 'drops', format: (v) => v.toFixed(0), reverse: true },
             { key: 'fifas', label: 'Fifas', valueKey: 'fifas', format: (v) => v.toFixed(0), reverse: false },
+            { key: 'cup_sinks', label: 'Cup Sinks', valueKey: 'cup_sinks', format: (v) => v.toFixed(0), reverse: false },
+            { key: 'fours', label: '4\'s', valueKey: 'fours', format: (v) => v.toFixed(0), reverse: false },
             { key: 'pointsPerThrow', label: 'Points per Throw', valueKey: 'pointsPerThrow', format: (v) => v.toFixed(3), reverse: false },
             { key: 'catchPercentage', label: 'Catch %', valueKey: 'catchPercentage', format: (v) => v.toFixed(1) + '%', reverse: false }
         ];
@@ -1978,9 +2002,17 @@ function getPlayerStatsInputs(team, playersMap, gameNum, teamLetter) {
                     <label>Fifas</label>
                     <input type="number" min="0" value="0" data-game="${gameNum}" data-team="${teamLetter}" data-player="${player.id}" data-stat="fifas">
                 </div>
+                <div class="stat-input">
+                    <label>Cup Sinks</label>
+                    <input type="number" min="0" value="0" data-game="${gameNum}" data-team="${teamLetter}" data-player="${player.id}" data-stat="cup_sinks">
+                </div>
+                <div class="stat-input">
+                    <label>4's</label>
+                    <input type="number" min="0" value="0" data-game="${gameNum}" data-team="${teamLetter}" data-player="${player.id}" data-stat="fours">
+                </div>
             </div>
         </div>
-    `).join('');
+`).join('');
 }
 
 function resetMatchForm() {
@@ -2042,7 +2074,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             throws: 0,
                             catches: 0,
                             drops: 0,
-                            fifas: 0
+                            fifas: 0,
+                            cup_sinks: 0,
+                            fours: 0
                         };
                         playerStats.push(playerStatObj);
                     }

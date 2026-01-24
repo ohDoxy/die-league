@@ -83,6 +83,10 @@ def load_data():
                         p['drops'] = 0
                     if 'fifas' not in p:
                         p['fifas'] = 0
+                    if 'cup_sinks' not in p:
+                        p['cup_sinks'] = 0
+                    if 'fours' not in p:
+                        p['fours'] = 0
                 players = [Player(**p) for p in players_data]
         except Exception as e:
             print(f"Error loading players: {e}")
@@ -187,6 +191,8 @@ class Player(BaseModel):
     catches: int = 0
     drops: int = 0
     fifas: int = 0
+    cup_sinks: int = 0
+    fours: int = 0
 
 
 class Team(BaseModel):
@@ -475,6 +481,8 @@ class GamePlayerStats(BaseModel):
     catches: int = 0
     drops: int = 0
     fifas: int = 0
+    cup_sinks: int = 0
+    fours: int = 0
 
 
 class GameStats(BaseModel):
@@ -517,7 +525,9 @@ def submit_match(match: MatchSubmission, token: str = Depends(verify_auth)):
             'throws': 0,
             'catches': 0,
             'drops': 0,
-            'fifas': 0
+            'fifas': 0,
+            'cup_sinks': 0,
+            'fours': 0
         }
     
     # Accumulate stats from all games
@@ -530,6 +540,8 @@ def submit_match(match: MatchSubmission, token: str = Depends(verify_auth)):
                 player_stats_accumulator[player_stats.player_id]['catches'] += player_stats.catches
                 player_stats_accumulator[player_stats.player_id]['drops'] += player_stats.drops
                 player_stats_accumulator[player_stats.player_id]['fifas'] += player_stats.fifas
+                player_stats_accumulator[player_stats.player_id]['cup_sinks'] += player_stats.cup_sinks
+                player_stats_accumulator[player_stats.player_id]['fours'] += player_stats.fours
         
         for player_stats in game.team_b_players:
             if player_stats.player_id in player_stats_accumulator:
@@ -539,6 +551,8 @@ def submit_match(match: MatchSubmission, token: str = Depends(verify_auth)):
                 player_stats_accumulator[player_stats.player_id]['catches'] += player_stats.catches
                 player_stats_accumulator[player_stats.player_id]['drops'] += player_stats.drops
                 player_stats_accumulator[player_stats.player_id]['fifas'] += player_stats.fifas
+                player_stats_accumulator[player_stats.player_id]['cup_sinks'] += player_stats.cup_sinks
+                player_stats_accumulator[player_stats.player_id]['fours'] += player_stats.fours
     
     # Update player stats (add to existing stats)
     for player_id, stats in player_stats_accumulator.items():
@@ -550,6 +564,8 @@ def submit_match(match: MatchSubmission, token: str = Depends(verify_auth)):
             player.catches = (player.catches or 0) + stats['catches']
             player.drops = (player.drops or 0) + stats['drops']
             player.fifas = (player.fifas or 0) + stats['fifas']
+            player.cup_sinks = (player.cup_sinks or 0) + stats['cup_sinks']
+            player.fours = (player.fours or 0) + stats['fours']
     
     # Update team W-L records
     if match.winner_id == match.team_a_id:

@@ -32,17 +32,17 @@
     "player1_id": 6,
     "player2_id": 11,
     "player3_id": 15,
-    "wins": 1,
+    "wins": 2,
     "losses": 0
   },
   {
     "id": 5,
-    "name": "TEAM LUKE",
+    "name": "Chink Sandwich ",
     "player1_id": 7,
     "player2_id": 12,
     "player3_id": 18,
     "wins": 0,
-    "losses": 1
+    "losses": 3
   },
   {
     "id": 6,
@@ -50,8 +50,8 @@
     "player1_id": 5,
     "player2_id": 13,
     "player3_id": 17,
-    "wins": 0,
-    "losses": 1
+    "wins": 1,
+    "losses": 2
   },
   {
     "id": 7,
@@ -59,7 +59,7 @@
     "player1_id": 4,
     "player2_id": 14,
     "player3_id": 16,
-    "wins": 1,
+    "wins": 2,
     "losses": 0
   }
 ]

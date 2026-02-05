@@ -8,7 +8,9 @@
     "throws": 32,
     "catches": 12,
     "drops": 6,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 1,
+    "fours": 0
   },
   {
     "id": 2,
@@ -19,7 +21,9 @@
     "throws": 53,
     "catches": 15,
     "drops": 16,
-    "fifas": 2
+    "fifas": 2,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 3,
@@ -30,51 +34,61 @@
     "throws": 30,
     "catches": 6,
     "drops": 12,
-    "fifas": 1
+    "fifas": 1,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 4,
     "name": "Lane Miller",
     "rank": 4,
-    "points": 9,
-    "table_hits": 22,
-    "throws": 59,
-    "catches": 22,
-    "drops": 4,
-    "fifas": 2
+    "points": 15,
+    "table_hits": 42,
+    "throws": 90,
+    "catches": 31,
+    "drops": 10,
+    "fifas": 4,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 5,
     "name": "Joe Tuber",
     "rank": 5,
-    "points": 7,
-    "table_hits": 36,
-    "throws": 58,
-    "catches": 27,
-    "drops": 6,
-    "fifas": 0
+    "points": 35,
+    "table_hits": 90,
+    "throws": 125,
+    "catches": 57,
+    "drops": 16,
+    "fifas": 2,
+    "cup_sinks": 0,
+    "fours": 1
   },
   {
     "id": 6,
     "name": "Zach Brubaker",
     "rank": 6,
-    "points": 13,
-    "table_hits": 19,
-    "throws": 26,
-    "catches": 7,
-    "drops": 6,
-    "fifas": 0
+    "points": 22,
+    "table_hits": 44,
+    "throws": 62,
+    "catches": 23,
+    "drops": 17,
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 7,
     "name": "Luke Waller",
     "rank": 7,
-    "points": 3,
-    "table_hits": 8,
-    "throws": 12,
-    "catches": 4,
-    "drops": 7,
-    "fifas": 0
+    "points": 19,
+    "table_hits": 42,
+    "throws": 74,
+    "catches": 24,
+    "drops": 20,
+    "fifas": 0,
+    "cup_sinks": 1,
+    "fours": 0
   },
   {
     "id": 8,
@@ -85,7 +99,9 @@
     "throws": 31,
     "catches": 10,
     "drops": 13,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 9,
@@ -96,7 +112,9 @@
     "throws": 70,
     "catches": 21,
     "drops": 24,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 10,
@@ -107,95 +125,113 @@
     "throws": 39,
     "catches": 7,
     "drops": 12,
-    "fifas": 1
+    "fifas": 1,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 11,
     "name": "Nick Minerva",
     "rank": 11,
-    "points": 0,
-    "table_hits": 0,
-    "throws": 0,
-    "catches": 0,
-    "drops": 0,
-    "fifas": 0
+    "points": 7,
+    "table_hits": 11,
+    "throws": 18,
+    "catches": 5,
+    "drops": 3,
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 12,
     "name": "Bryan Morse",
     "rank": 12,
-    "points": 5,
-    "table_hits": 8,
-    "throws": 12,
-    "catches": 2,
-    "drops": 7,
-    "fifas": 0
+    "points": 17,
+    "table_hits": 29,
+    "throws": 78,
+    "catches": 18,
+    "drops": 28,
+    "fifas": 1,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 13,
     "name": "Brayden Stewart",
     "rank": 13,
-    "points": 3,
-    "table_hits": 16,
-    "throws": 34,
-    "catches": 9,
-    "drops": 5,
-    "fifas": 1
+    "points": 10,
+    "table_hits": 35,
+    "throws": 82,
+    "catches": 20,
+    "drops": 17,
+    "fifas": 2,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 14,
     "name": "Spencer Shirah",
     "rank": 14,
-    "points": 6,
-    "table_hits": 20,
-    "throws": 34,
-    "catches": 15,
-    "drops": 5,
-    "fifas": 1
+    "points": 16,
+    "table_hits": 36,
+    "throws": 63,
+    "catches": 20,
+    "drops": 12,
+    "fifas": 3,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 15,
     "name": "Matthew Mays",
     "rank": 15,
-    "points": 9,
-    "table_hits": 12,
-    "throws": 25,
-    "catches": 7,
-    "drops": 5,
-    "fifas": 0
+    "points": 15,
+    "table_hits": 23,
+    "throws": 42,
+    "catches": 11,
+    "drops": 7,
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 16,
     "name": "Luc Sanfacon",
     "rank": 16,
-    "points": 3,
-    "table_hits": 9,
-    "throws": 24,
-    "catches": 6,
-    "drops": 5,
-    "fifas": 1
+    "points": 15,
+    "table_hits": 33,
+    "throws": 56,
+    "catches": 10,
+    "drops": 15,
+    "fifas": 3,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 17,
     "name": "Robert Parker",
     "rank": 17,
-    "points": 4,
-    "table_hits": 6,
-    "throws": 24,
+    "points": 8,
+    "table_hits": 17,
+    "throws": 42,
     "catches": 1,
-    "drops": 5,
-    "fifas": 0
+    "drops": 14,
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 18,
     "name": "George Tims",
     "rank": 18,
-    "points": 6,
-    "table_hits": 10,
-    "throws": 27,
-    "catches": 3,
-    "drops": 8,
-    "fifas": 0
+    "points": 15,
+    "table_hits": 24,
+    "throws": 56,
+    "catches": 5,
+    "drops": 18,
+    "fifas": 0,
+    "cup_sinks": 1,
+    "fours": 0
   },
   {
     "id": 19,
@@ -206,7 +242,9 @@
     "throws": 29,
     "catches": 4,
     "drops": 12,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 20,
@@ -217,7 +255,9 @@
     "throws": 59,
     "catches": 4,
     "drops": 18,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   },
   {
     "id": 21,
@@ -228,6 +268,8 @@
     "throws": 21,
     "catches": 2,
     "drops": 6,
-    "fifas": 0
+    "fifas": 0,
+    "cup_sinks": 0,
+    "fours": 0
   }
 ]
